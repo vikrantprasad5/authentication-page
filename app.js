@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const encrypt = require("mongoose-encryption");
+const md5 = require("md5");
 
 const app = express();
 
@@ -19,23 +19,11 @@ mongoose.connect("mongodb://localhost:27017/userDataDB", {
   useNewUrlParser: true
 });
 
-//Level 2 Encrypt Schema (everytime new object is created from mongoose schema object)
+// (everytime new object is created from mongoose schema object)
 const userSchema= new mongoose.Schema({
   email:String,
   password:String
 });
-
-//Level 2 : encypton key and plugins
-//const secret = "Thisisourlittlesecret." ; //Moved in .env file
-userSchema.plugin(encrypt, { secret: process.env.SECRET, encryptedFields: ['password']});
-
-
-// Level 1 Schema this is just a simple JS Object 
-// const userSchema= {
-//   email:String,
-//   password:String
-// };
-
 
 const User = new mongoose.model("User",userSchema);
 
@@ -49,7 +37,7 @@ app.get("/login",function(req,res){
 
 app.post("/login",function(req,res){
   const username = req.body.username;
-  const password = req.body.password;
+  const password = md5(req.body.password);
 
   User.findOne({email : username},function(err,foundUser){
     if(err){
@@ -73,7 +61,7 @@ app.get("/register",function(req,res){
 app.post("/register",function(req,res){
   const newUser = new User({
     email: req.body.username,
-    password: req.body.password
+    password: md5(req.body.password)
   })
   newUser.save(function(err){
     if(err){
