@@ -24,7 +24,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect("mongodb://localhost:27017/userDataDB", {
+mongoose.connect("mongodb+srv://admin-vikrant:test123@cluster0.lkfg4.mongodb.net/userDataDB", {
   useUnifiedTopology: true,
   useNewUrlParser: true
 });
